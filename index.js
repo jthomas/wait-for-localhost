@@ -2,28 +2,28 @@
 const http = require('http');
 
 const waitForLocalhost = options => {
-	options = Object.assign({}, options);
+  options = Object.assign({}, options);
 
-	return new Promise(resolve => {
-		const retry = () => setTimeout(main, 200);
+  return new Promise(resolve => {
+    const retry = () => setTimeout(main, options.delay);
 
-		const method = options.useGet ? 'GET' : 'HEAD';
+    const method = options.useGet ? 'GET' : 'HEAD';
 
-		const main = () => {
-			const request = http.request({method, port: options.port}, response => {
-				if (response.statusCode === 200) {
-					return resolve();
-				}
+    const main = () => {
+      const request = http.request({method, path: options.path, port: options.port}, response => {
+        if (response.statusCode === 200) {
+          return resolve();
+        }
 
-				retry();
-			});
+        retry();
+      });
 
-			request.on('error', retry);
-			request.end();
-		};
+      request.on('error', retry);
+      request.end();
+    };
 
-		main();
-	});
+    main();
+  });
 };
 
 module.exports = waitForLocalhost;
